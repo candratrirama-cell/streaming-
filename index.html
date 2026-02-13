@@ -3,91 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RStreaming - Official Premium</title>
+    <title>RStreaming - Final Premium</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
-        :root {
-            --primary: #ff0050;
-            --bg-light: #ffffff;
-            --bg-gray: #f8f9fa;
-            --text-dark: #1a1a1b;
-            --shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg-gray); color: var(--text-dark); font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
-
-        /* Pages */
+        :root { --primary: #ff0050; --bg: #f8f9fa; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; color: #1a1a1b; }
+        
         .page { display: none; height: 100vh; width: 100vw; position: absolute; flex-direction: column; }
         .page.active { display: flex; }
 
-        /* Header */
-        .header { padding: 15px 20px; background: white; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        /* Login */
+        #login-page { background: white; justify-content: center; align-items: center; text-align: center; }
+        .btn-g { padding: 12px 25px; border-radius: 10px; border: 1px solid #ddd; background: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
         /* Home Grid */
-        #home-page { padding-bottom: 80px; overflow-y: auto; }
-        .container { padding: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid #eee; position: relative; }
-        .card-thumb { height: 200px; width: 100%; position: relative; }
-        .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .live-label { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; }
-        .card-footer { padding: 10px; font-size: 13px; font-weight: 600; }
+        .header { padding: 15px; background: white; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; overflow-y: auto; flex: 1; }
+        .card { height: 250px; border-radius: 15px; overflow: hidden; background: #ddd; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .live-tag { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
 
-        /* Player TikTok View */
-        #player-page { background: #000; z-index: 2000; }
-        video { width: 100%; height: 100%; object-fit: cover; background: #000; }
-        .player-ui { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background: linear-gradient(transparent 70%, rgba(0,0,0,0.6)); }
-        .interactive { pointer-events: auto; }
-        .exit-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.4); border: none; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 600; backdrop-filter: blur(5px); }
-        .side-bar { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; }
-        .btn-love { font-size: 50px; cursor: pointer; filter: drop-shadow(0 0 10px rgba(255,0,80,0.5)); }
+        /* Player TikTok Style */
+        #player-page { background: #000; }
+        video { width: 100%; height: 100%; object-fit: cover; position: absolute; background: #000; }
+        .player-overlay { position: absolute; inset: 0; z-index: 100; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background: linear-gradient(transparent 60%, rgba(0,0,0,0.8)); }
+        
+        /* Viewer & Info */
+        .v-info { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; pointer-events: auto; }
+        .btn-back { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; pointer-events: auto; z-index: 101; }
 
-        /* Nav Bawah */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { text-align: center; font-size: 11px; color: #888; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .btn-add { background: var(--primary); color: white; width: 50px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(255,0,80,0.3); }
+        /* Chat */
+        .chat-container { max-height: 160px; overflow-y: auto; color: white; margin-bottom: 10px; pointer-events: auto; }
+        .msg { font-size: 14px; margin-bottom: 4px; text-shadow: 1px 1px 2px #000; }
+        .msg b { color: #ffeb3b; margin-right: 5px; }
 
-        /* Animation */
-        .pop-heart { position: absolute; bottom: 120px; right: 30px; font-size: 40px; pointer-events: none; animation: flyUp 0.8s ease-out forwards; }
-        @keyframes flyUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-300px) scale(2); } }
+        .input-wrap { display: flex; gap: 8px; pointer-events: auto; }
+        input { flex: 1; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 10px 15px; color: white; outline: none; }
+
+        /* Nav */
+        .nav { height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+        .btn-live { background: var(--primary); color: white; padding: 8px 20px; border-radius: 10px; font-weight: bold; }
+
+        /* Force Play Button (JAMINAN ANTI HITAM) */
+        #force-play { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="login-page" class="page active" style="justify-content:center; align-items:center; background:white;">
-        <div class="logo" style="font-size: 45px; margin-bottom: 30px;">RStreaming</div>
-        <button onclick="login()" style="background:#fff; border:1px solid #ddd; padding:12px 30px; border-radius:10px; font-weight:600; display:flex; align-items:center; gap:10px;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Lanjutkan dengan Google
+    <div id="login-page" class="page active">
+        <h1 style="color:var(--primary); font-size: 40px;">RStreaming</h1>
+        <button class="btn-g" onclick="login()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Lanjutkan dengan Google
         </button>
     </div>
 
     <div id="home-page" class="page">
         <div class="header"><div class="logo">RStreaming</div><div onclick="location.reload()">🔄</div></div>
-        <div class="container">
-            <div style="font-weight:700; margin-bottom:15px;">Live Discovery</div>
-            <div class="grid" id="stream-list"></div>
+        <div class="grid" id="room-list"></div>
+        <div class="nav">
+            <div onclick="showTab('home')">🏠<br><small>Home</small></div>
+            <div onclick="startLive()" class="btn-live">LIVE</div>
+            <div onclick="auth.signOut()">👤<br><small>Keluar</small></div>
         </div>
     </div>
 
     <div id="player-page" class="page">
-        <video id="v-remote" autoplay playsinline></video>
-        <video id="v-local" autoplay playsinline muted style="position:absolute; top:80px; right:20px; width:100px; height:150px; border-radius:12px; border:2px solid white; display:none; object-fit:cover; z-index:50;"></video>
+        <div id="force-play" onclick="triggerPlay()">
+            <span style="font-size: 50px;">▶️</span>
+            <p>Klik untuk Menonton</p>
+        </div>
+
+        <video id="v-remote" autoplay playsinline webkit-playsinline></video>
+        <video id="v-local" autoplay playsinline muted style="position:absolute; top:70px; right:20px; width:90px; height:130px; border-radius:12px; border:2px solid #fff; object-fit:cover; display:none; z-index:10;"></video>
         
-        <button class="exit-btn interactive" onclick="stopStream()">← Kembali</button>
-        <div class="player-ui">
-            <div class="side-bar interactive">
-                <div class="btn-love" onclick="sendLove()">❤️</div>
+        <button class="btn-back" onclick="exitLive()">← Kembali</button>
+        <div class="v-info">👁️ <span id="view-count">0</span></div>
+
+        <div class="player-overlay">
+            <div class="chat-container" id="chat-list"></div>
+            <div class="input-wrap">
+                <input type="text" id="chat-in" placeholder="Ketik komentar...">
+                <button onclick="sendChat()" style="background:var(--primary); border:none; color:white; border-radius:50%; width:35px; height:35px;">></button>
             </div>
         </div>
-    </div>
-
-    <div class="nav" id="main-nav" style="display:none;">
-        <div class="nav-item active" onclick="showTab('home')">🏠<br>Beranda</div>
-        <div onclick="startLive()"><div class="btn-add">+</div></div>
-        <div class="nav-item" onclick="auth.signOut()">🚪<br>Keluar</div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -107,85 +107,101 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
-        let peer = null, myStream = null;
+        let peer = null, myStream = null, activeRoom = "";
 
+        // AUTH CHECK
         auth.onAuthStateChanged(user => {
-            if(user) {
-                showTab('home');
-                document.getElementById('main-nav').style.display = 'flex';
-                initPeer(user.uid);
-                listenLive();
-            } else {
-                showTab('login');
-                document.getElementById('main-nav').style.display = 'none';
-            }
+            if(user) { showTab('home'); initPeer(user.uid); listenRooms(); }
+            else { showTab('login'); }
         });
 
         function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
         function initPeer(id) {
-            // FIX: Server STUN Google agar tidak layar hitam
-            peer = new Peer(id, {
-                config: {'iceServers': [{ url: 'stun:stun.l.google.com:19302' }, { url: 'stun:stun1.l.google.com:19302' }]}
+            // JAMINAN: Multi STUN Server Google
+            peer = new Peer(id, { 
+                config: { 'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' }
+                ]}
             });
             peer.on('call', call => {
                 call.answer(myStream);
-                call.on('stream', rem => {
-                    const rv = document.getElementById('v-remote');
-                    rv.srcObject = rem; rv.play();
-                });
+                call.on('stream', s => displayRemote(s));
             });
         }
 
-        function listenLive() {
-            db.ref('active_rooms').on('value', snap => {
-                const list = document.getElementById('stream-list');
-                list.innerHTML = "";
+        function displayRemote(s) {
+            const v = document.getElementById('v-remote');
+            v.srcObject = s;
+            v.play().catch(() => {
+                // JAMINAN: Munculkan tombol play kalau browser memblokir video
+                document.getElementById('force-play').style.display = 'flex';
+            });
+        }
+
+        function triggerPlay() {
+            const v = document.getElementById('v-remote');
+            v.play();
+            document.getElementById('force-play').style.display = 'none';
+        }
+
+        function listenRooms() {
+            db.ref('rooms').on('value', snap => {
+                const list = document.getElementById('room-list'); list.innerHTML = "";
                 snap.forEach(s => {
-                    const d = s.val();
-                    list.innerHTML += `
-                        <div class="card" onclick="watchLive('${s.key}')">
-                            <div class="card-thumb">
-                                <div class="live-label">LIVE</div>
-                                <img src="${d.photo}">
-                            </div>
-                            <div class="card-footer">${d.name}</div>
-                        </div>`;
+                    list.innerHTML += `<div class="card" onclick="joinLive('${s.key}')">
+                        <div class="live-tag">LIVE</div>
+                        <img src="${s.val().photo}">
+                        <div style="position:absolute; bottom:10px; left:10px; color:white; font-weight:bold; text-shadow:1px 1px 3px #000;">${s.val().name}</div>
+                    </div>`;
                 });
             });
         }
 
         async function startLive() {
+            activeRoom = auth.currentUser.uid;
             showTab('player');
-            const lv = document.getElementById('v-local');
-            lv.style.display = 'block';
-            myStream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}, audio: true});
-            lv.srcObject = myStream;
-            db.ref('active_rooms/' + auth.currentUser.uid).set({ name: auth.currentUser.displayName, photo: auth.currentUser.photoURL });
+            document.getElementById('v-local').style.display = 'block';
+            myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+            document.getElementById('v-local').srcObject = myStream;
+            db.ref('rooms/' + activeRoom).set({ name: auth.currentUser.displayName, photo: auth.currentUser.photoURL });
+            setupSocial(activeRoom);
         }
 
-        function watchLive(id) {
+        function joinLive(id) {
+            activeRoom = id;
             showTab('player');
             const call = peer.call(id, null);
-            call.on('stream', rem => {
-                const rv = document.getElementById('v-remote');
-                rv.srcObject = rem; rv.play();
+            call.on('stream', s => displayRemote(s));
+            setupSocial(id);
+        }
+
+        function setupSocial(id) {
+            // Chat Realtime
+            db.ref('chats/' + id).limitToLast(15).on('value', snap => {
+                const box = document.getElementById('chat-list'); box.innerHTML = "";
+                snap.forEach(c => { box.innerHTML += `<div class="msg"><b>${c.val().u}</b> ${c.val().t}</div>`; });
+                box.scrollTop = box.scrollHeight;
             });
-            db.ref('taps/' + id).on('value', () => popHeart());
+            // Viewers Count
+            const vRef = db.ref('v_count/' + id + '/' + auth.currentUser.uid);
+            vRef.set(true); vRef.onDisconnect().remove();
+            db.ref('v_count/' + id).on('value', snap => {
+                document.getElementById('view-count').innerText = snap.numChildren();
+            });
         }
 
-        function sendLove() { db.ref('taps/' + auth.currentUser.uid).set(Date.now()); }
-        function popHeart() {
-            const h = document.createElement('div');
-            h.className = 'pop-heart'; h.innerHTML = '❤️';
-            h.style.right = (Math.random() * 50 + 20) + 'px';
-            document.getElementById('player-page').appendChild(h);
-            setTimeout(() => h.remove(), 800);
+        function sendChat() {
+            const el = document.getElementById('chat-in');
+            if(el.value) { db.ref('chats/' + activeRoom).push({ u: auth.currentUser.displayName.split(' ')[0], t: el.value }); el.value = ""; }
         }
 
-        function stopStream() {
+        function exitLive() {
             if(myStream) myStream.getTracks().forEach(t => t.stop());
-            db.ref('active_rooms/' + auth.currentUser.uid).remove();
+            if(activeRoom === auth.currentUser.uid) db.ref('rooms/' + activeRoom).remove();
             location.reload();
         }
 
