@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RStreaming - Live</title>
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: white; font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
+        
+        /* Layar Awal Login */
+        #login-screen { 
+            height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            text-align: center;
+        }
+        .btn-google { 
+            background: white; color: #444; border: none; padding: 15px 30px; 
+            border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px;
+            display: flex; align-items: center; gap: 12px; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.5); }
+
+        /* Area Video & UI */
+        #video-frame { width: 100vw; height: 100vh; display: none; }
+        .overlay { position: absolute; bottom: 40px; left: 0; width: 100%; z-index: 100; pointer-events: none; display: none; }
+        .controls { pointer-events: auto; display: flex; justify-content: flex-end; padding-right: 30px; align-items: center; gap: 15px; }
+        
+        #user-info { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 30px; font-size: 14px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+
+        /* Animasi Hati Terbang */
+        .heart { position: absolute; bottom: 120px; right: 50px; font-size: 50px; pointer-events: none; animation: flyUp 1.2s ease-out forwards; }
+        @keyframes flyUp {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-500px) scale(2.5) rotate(30deg); opacity: 0; }
+        }
+
+        .btn-love { 
+            background: #ff0050; border: none; width: 70px; height: 70px; 
+            border-radius: 50%; color: white; font-size: 35px; cursor: pointer; 
+            box-shadow: 0 0 25px rgba(255,0,80,0.7); transition: 0.1s; 
+        }
+        .btn-love:active { transform: scale(0.8); }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <h1 style="font-size: 3.5rem; margin-bottom: 5px; letter-spacing: -2px;">RStreaming</h1>
+        <p style="color: #bbb; margin-bottom: 30px;">Live Stream Publik & Tap-Tap Realtime</p>
+        <button class="btn-google" onclick="loginGoogle()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
+            Masuk dengan Google
+        </button>
+    </div>
+
+    <div id="video-frame"></div>
+
+    <div class="overlay" id="ui-overlay">
+        <div class="controls">
+            <span id="user-info">Memuat...</span>
+            <button class="btn-love" onclick="kirimTap()">❤️</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // CONFIG FIREBASE MILIK KAMU (SUDAH DISESUAIKAN)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8P9sUYJ0dB79bly9JLbZbmgpn4MSzsQw",
+            authDomain: "broser-ff83e.firebaseapp.com",
+            databaseURL: "https://broser-ff83e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "broser-ff83e",
+            storageBucket: "broser-ff83e.firebasestorage.app",
+            messagingSenderId: "544219576610",
+            appId: "1:544219576610:web:ec8254ac1ed69ae1050d7b"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        // FUNGSI LOGIN GOOGLE
+        function loginGoogle() {
+            auth.signInWithPopup(provider).then((result) => {
+                startRStreaming(result.user);
+            }).catch((e) => alert("Gagal masuk: " + e.message));
+        }
+
+        // FUNGSI MEMULAI STREAM SETELAH LOGIN
+        function startRStreaming(user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('video-frame').style.display = 'block';
+            document.getElementById('ui-overlay').style.display = 'block';
+            document.getElementById('user-info').innerText = "Streaming as: " + user.displayName;
+
+            // Masuk ke Jitsi Room
+            const api = new JitsiMeetExternalAPI("meet.jit.si", {
+                roomName: "RStreaming_Global_Room_Exclusive",
+                width: '100%',
+                height: '100%',
+                parentNode: document.querySelector('#video-frame'),
+                userInfo: { displayName: user.displayName }
+            });
+        }
+
+        // FUNGSI TAP-TAP ❤️ (FIREBASE REALTIME)
+        function kirimTap() {
+            db.ref('live_taps').set({
+                time: Date.now(),
+                user: auth.currentUser.displayName,
+                random: Math.random() // Penting agar database mendeteksi perubahan terus-menerus
+            });
+        }
+
+        // Dengerin perubahan data di Firebase (Trigger Animasi Hati)
+        db.ref('live_taps').on('value', (snapshot) => {
+            if(snapshot.exists()) {
+                tampilkanEfekHati();
+            }
+        });
+
+        function tampilkanEfekHati() {
+            const h = document.createElement('div');
+            h.className = 'heart'; h.innerHTML = '❤️';
+            // Posisi hati acak di sekitar tombol
+            h.style.right = (Math.random() * 60 + 20) + 'px';
+            document.body.appendChild(h);
+            
+            // Hapus elemen setelah animasi selesai agar web tidak berat
+            setTimeout(() => h.remove(), 1200);
+        }
+    </script>
+</body>
+</html>
