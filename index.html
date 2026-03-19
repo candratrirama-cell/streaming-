@@ -10,31 +10,30 @@
     <meta property="og:image" content="https://i.ibb.co/nhzx0CS/20260105-114157.png">
     <meta name="twitter:image" content="https://i.ibb.co/nhzx0CS/20260105-114157.png">
     
-    <!-- Script Verifikasi RtyS -->
+    <!-- Script Verifikasi Akses -->
     <script>
         (function() {
-            // Alamat pusat dengan r kecil
-            const RTY_HOST = "https://rm-two.vercel.app"; 
-            const params = new URLSearchParams(window.location.search);
-            
-            // Cek sesi per tab (sessionStorage)
-            if (!sessionStorage.getItem('rtys_session')) {
-                if (params.get('rtys_auth') === 'success') {
-                    // User kembali dari rm-two.vercel.app
-                    sessionStorage.setItem('rtys_session', 'active');
-                    // Bersihkan parameter URL agar rapi
-                    const clean = window.location.origin + window.location.pathname;
-                    window.history.replaceState({}, document.title, clean);
-                } else {
-                    // Belum verifikasi, lempar ke pusat dengan membawa URL asli (redirect)
-                    const current = window.location.href;
-                    window.location.href = `${RTY_HOST}?redirect=${encodeURIComponent(current)}`;
-                }
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlToken = urlParams.get('token');
+            const sessionToken = sessionStorage.getItem('rtysafe_session_token');
+
+            // 1. Cek apakah ada token di URL yang cocok dengan session (Baru selesai verif)
+            if (urlToken && urlToken === sessionToken) {
+                // Berhasil: Bersihkan URL agar token tidak bisa disalin/share
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            } 
+            // 2. Cek apakah sesi sudah aktif (Refresh halaman/F5)
+            else if (sessionToken) {
+                // Biarkan pengguna tetap di halaman
+            } 
+            // 3. Jika tidak ada sesi & tidak ada token (Akses ilegal / Tab baru)
+            else {
+                window.location.replace('verify.html');
             }
         })();
     </script>
     
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #000000;
@@ -57,17 +56,33 @@
             --glass-border: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.1) 100%);
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
+        /* Sembunyikan konten secara default */
+        body { 
+            display: none; 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; 
         }
-
-        body { 
-            background: var(--bg); color: var(--text); 
+        
+        /* Hanya tampilkan jika sudah terverifikasi */
+        body.verified { 
+            display: block !important; 
+            background: var(--bg); 
+            color: var(--text); 
             transition: background 0.5s var(--ios-bezier); 
-            min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh; 
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; 
         }
 
         .view { display: none; padding-bottom: 120px; }
@@ -183,9 +198,9 @@
         #toast { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 800; z-index: 21000; opacity: 0; transition: 0.4s; pointer-events: none; }
         #toast.active { opacity: 1; top: 60px; }
     </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body data-theme="dark">
-
+<body id="mainBody">
     <div id="toast">Notifikasi</div>
 
     <div id="view-home" class="view active">
@@ -317,6 +332,11 @@
                 grid.appendChild(div);
             });
             lucide.createIcons();
+        }
+
+        // Verifikasi sesi untuk menampilkan konten
+        if (sessionStorage.getItem('rtysafe_session_token')) {
+            document.getElementById('mainBody').classList.add('verified');
         }
 
         window.switchView = (viewName, el) => {
