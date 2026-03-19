@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>themeX Store - Premium Themes</title>
+    <link rel="icon" href="https://i.ibb.co/nhzx0CS/20260105-114157.png" type="image/png">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #000000; --card: rgba(255, 255, 255, 0.08); --accent: #ffffff;
+            --text: #ffffff; --text-dim: #a1a1a6; --heart: #ff3b30;
+            --ios-blur: blur(30px) saturate(210%); --ios-bezier: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        [data-theme="light"] { --bg: #f2f2f7; --card: rgba(0, 0, 0, 0.05); --accent: #000000; --text: #000000; --text-dim: #636366; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.5s var(--ios-bezier); min-height: 100vh; overflow-x: hidden; }
+        
+        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; }
+        .view { display: none; padding-bottom: 120px; }
+        .view.active { display: block; animation: viewEnter 0.5s var(--ios-bezier); }
+        @keyframes viewEnter { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Header & Search */
+        header { padding: 20px 0; }
+        .brand-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .brand-row h1 { font-size: 28px; font-weight: 800; }
+        .search-bar { background: var(--card); border-radius: 18px; display: flex; align-items: center; padding: 0 14px; backdrop-filter: var(--ios-blur); }
+        .search-bar input { flex: 1; border: none; background: transparent; padding: 14px 10px; color: var(--text); outline: none; }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 15px; }
+        .card { cursor: pointer; transition: 0.3s; }
+        .card-img { width: 100%; aspect-ratio: 0.68; border-radius: 20px; overflow: hidden; background: #111; margin-bottom: 8px; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Navigation Dock */
+        .dock-wrap { position: fixed; bottom: 25px; left: 0; right: 0; display: flex; justify-content: center; z-index: 8000; }
+        .dock { background: rgba(20, 20, 20, 0.8); backdrop-filter: var(--ios-blur); padding: 6px; border-radius: 32px; display: flex; gap: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .dock-item { width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; color: var(--text-dim); transition: 0.4s; cursor: pointer; }
+        .dock-item.active { background: var(--accent); color: var(--bg); width: 120px; }
+        .dock-item span { font-size: 14px; font-weight: 700; margin-left: 8px; display: none; }
+        .dock-item.active span { display: block; }
+
+        /* Panel Detail */
+        .panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9000; transform: translateY(100%); transition: 0.5s var(--ios-bezier); overflow-y: auto; }
+        .panel.active { transform: translateY(0); }
+        .panel-nav { position: sticky; top: 0; padding: 12px 16px; display: flex; justify-content: space-between; background: var(--bg); z-index: 9999; }
+        
+        .btn-round { width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.1); color: var(--text); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        #toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 10px 20px; border-radius: 30px; font-weight: 800; z-index: 21000; opacity: 0; transition: 0.4s; pointer-events: none; }
+        #toast.active { opacity: 1; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div id="toast">Notifikasi</div>
+
+    <div id="view-home" class="view active">
+        <div class="container">
+            <header>
+                <div class="brand-row">
+                    <h1>theme<span>X</span></h1>
+                    <button class="btn-round" onclick="toggleTheme()"><i data-lucide="moon"></i></button>
+                </div>
+                <div class="search-bar">
+                    <i data-lucide="search" style="color: var(--text-dim)"></i>
+                    <input type="text" id="searchInput" placeholder="Cari tema..." oninput="doSearch()">
+                </div>
+            </header>
+            <div class="grid" id="mainGrid"></div>
+        </div>
+    </div>
+
+    <div class="dock-wrap">
+        <div class="dock">
+            <div class="dock-item active" onclick="switchView('home', this)"><i data-lucide="home"></i><span>Beranda</span></div>
+            <div class="dock-item" onclick="switchView('settings', this)"><i data-lucide="menu"></i><span>Menu</span></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = { databaseURL: "https://miningtransaction-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        onValue(ref(db, 'apps/'), (snapshot) => {
+            const data = snapshot.val();
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = '';
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-img"><img src="${item.images ? item.images[0] : ''}"></div>
+                        <p style="font-weight:700; margin-top:5px;">${item.name}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            lucide.createIcons();
+        });
+
+        window.toggleTheme = () => {
+            const body = document.body;
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            lucide.createIcons();
+        };
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
