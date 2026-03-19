@@ -8,37 +8,39 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;900&display=swap');
         body { background-color: #1a1a2e; font-family: 'Public Sans', sans-serif; }
-        .neo-box { background: #fff; border: 4px solid #000; box-shadow: 8px 8px 0px #000; }
-        .neo-btn { background: #facc15; border: 4px solid #000; box-shadow: 4px 4px 0px #000; font-weight: 900; }
+        .neo-box { background: #fff; border: 4px solid #000; box-shadow: 8px 8px 0px #000; transition: 0.2s; }
+        .neo-btn { background: #facc15; border: 4px solid #000; box-shadow: 4px 4px 0px #000; font-weight: 900; cursor: pointer; }
         .neo-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
-        .neo-input { width: 100%; padding: 15px; border: 4px solid #000; font-weight: 900; outline: none; }
+        .neo-input { width: 100%; padding: 15px; border: 4px solid #000; font-weight: 900; outline: none; background: #f8f9fa; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="p-4 md:p-10 text-black">
+<body class="p-4 md:p-10">
 
     <section id="login-page" class="min-h-screen flex items-center justify-center">
         <div class="neo-box p-10 max-w-sm w-full text-center">
-            <h2 class="text-2xl font-black mb-8 uppercase">Admin Access</h2>
-            <input type="text" id="u-in" placeholder="USERNAME" class="neo-input mb-4">
-            <input type="password" id="p-in" placeholder="PASSWORD" class="neo-input mb-8">
-            <button onclick="handleLogin()" class="neo-btn w-full py-4 text-xl">LOGIN →</button>
+            <h2 class="text-2xl font-black mb-8 uppercase italic underline">Masukan Sandi</h2>
+            <input type="password" id="sandi-in" placeholder="123xxx" class="neo-input mb-8 text-center">
+            <button onclick="handleLogin()" class="neo-btn w-full py-4 text-xl uppercase italic">Masuk Admin →</button>
         </div>
     </section>
 
     <section id="admin-page" class="hidden max-w-4xl mx-auto">
-        <h1 class="text-4xl font-black text-white italic mb-10">HELLO, BOSS!</h1>
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-4xl font-black text-white italic">HELLO, BOSS!</h1>
+            <button onclick="location.reload()" class="neo-btn bg-red-500 text-white px-6 py-2">LOGOUT</button>
+        </div>
         
         <div class="neo-box p-8 bg-white mb-10">
-            <h3 class="font-black text-xl mb-6 italic underline">NEW DEPLOYMENT</h3>
-            <input type="text" id="web-slug" placeholder="project-name" class="neo-input mb-4">
-            <textarea id="web-html" placeholder="Your HTML code..." class="neo-input h-48 mb-6"></textarea>
-            <button onclick="handlePublish()" class="neo-btn bg-cyan-400 w-full py-4 uppercase">Launch Project ✨</button>
+            <h3 class="font-black text-xl mb-6 italic">NEW DEPLOYMENT</h3>
+            <input type="text" id="web-slug" placeholder="nama-project" class="neo-input mb-4 lowercase">
+            <textarea id="web-html" placeholder="Paste kode HTML di sini..." class="neo-input h-48 mb-6 font-mono text-sm"></textarea>
+            <button onclick="handlePublish()" id="btn-pub" class="neo-btn bg-cyan-400 w-full py-4 uppercase italic">Launch Project ✨</button>
         </div>
 
         <div class="neo-box p-8 bg-white">
-            <h3 class="font-black text-xl mb-6 italic underline">MY PROJECTS</h3>
-            <div id="master-list" class="space-y-4 text-sm">Loading...</div>
+            <h3 class="font-black text-xl mb-6 italic text-blue-600">PROJECT LIST</h3>
+            <div id="master-list" class="space-y-4">Memuat data...</div>
         </div>
     </section>
 
@@ -46,42 +48,69 @@
     const api = 'api.php';
 
     async function handleLogin() {
+        const s = document.getElementById('sandi-in').value;
         const fd = new FormData();
-        fd.append('u', document.getElementById('u-in').value);
-        fd.append('p', document.getElementById('p-in').value);
+        fd.append('sandi', s);
 
         const res = await fetch(`${api}?action=login`, { method: 'POST', body: fd });
         if(res.ok) {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('admin-page').classList.remove('hidden');
             loadList();
-        } else { alert("SALAH, BOSS!"); }
+        } else { alert("SANDI SALAH, BOSS!"); }
     }
 
     async function handlePublish() {
+        const btn = document.getElementById('btn-pub');
+        const s = document.getElementById('web-slug').value;
+        const c = document.getElementById('web-html').value;
+        if(!s || !c) return alert("Isi semua data!");
+
+        btn.innerText = "DEPLOYING...";
         const fd = new FormData();
-        fd.append('slug', document.getElementById('web-slug').value);
-        fd.append('content', document.getElementById('web-html').value);
+        fd.append('slug', s);
+        fd.append('content', c);
 
         const res = await fetch(`${api}?action=publish`, { method: 'POST', body: fd });
         if(res.ok) {
             alert("BERHASIL!");
-            location.reload();
+            document.getElementById('web-slug').value = "";
+            document.getElementById('web-html').value = "";
+            loadList();
         }
+        btn.innerText = "Launch Project ✨";
     }
 
     async function loadList() {
         const res = await fetch(`${api}?action=list`);
         const data = await res.json();
-        const container = document.getElementById('master-list');
-        container.innerHTML = "";
+        const list = document.getElementById('master-list');
+        list.innerHTML = "";
         
+        if(Object.keys(data).length === 0) {
+            list.innerHTML = "<p class='font-bold italic text-gray-400'>Belum ada project.</p>";
+            return;
+        }
+
         for(let key in data) {
-            container.innerHTML += `
-                <div class="border-4 border-black p-4 flex justify-between bg-gray-50 shadow-[4px_4px_0px_#000]">
-                    <span class="font-black italic">/${key}</span>
-                    <span class="font-bold text-blue-600">${data[key].views || 0} Views</span>
+            list.innerHTML += `
+                <div class="border-4 border-black p-4 flex justify-between items-center bg-gray-50 shadow-[4px_4px_0px_#000]">
+                    <div>
+                        <h4 class="font-black text-lg italic">/${key}</h4>
+                        <span class="text-xs font-bold text-gray-500">${data[key].time || ''}</span>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        <span class="font-black text-blue-600 underline">${data[key].views || 0} Views</span>
+                        <button onclick="del('${key}')" class="text-red-600 font-black text-xs hover:underline">HAPUS</button>
+                    </div>
                 </div>`;
+        }
+    }
+
+    async function del(key) {
+        if(confirm("Hapus project " + key + "?")) {
+            await fetch(`${api}?action=delete&key=${key}`);
+            loadList();
         }
     }
 </script>
