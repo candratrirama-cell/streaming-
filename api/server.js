@@ -1,39 +1,49 @@
 const express = require('express');
-const admin = require('firebase-admin');
-const path = require('path');
 const app = express();
+const admin = require('firebase-admin');
 
-// KONFIGURASI DATABASE (Hanya ada di server)
-const FIREBASE_DB_URL = "https://miningtransaction-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-// Inisialisasi Firebase Admin
+// Inisialisasi Firebase Admin (Hanya sekali)
 if (!admin.apps.length) {
-    admin.initializeApp({
-        databaseURL: FIREBASE_DB_URL
-    });
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: "broser-ff83e",
+      // Penting: Gunakan Environment Variables di Vercel untuk Service Account
+      clientEmail: "firebase-adminsdk-xxxxx@broser-ff83e.iam.gserviceaccount.com",
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    }),
+    databaseURL: "https://broser-ff83e-default-rtdb.asia-southeast1.firebasedatabase.app"
+  });
 }
 
 const db = admin.database();
+app.use(express.json());
 
-// Endpoint API untuk mengambil data tema
-app.get('/api/get-themes', async (req, res) => {
-    try {
-        const ref = db.ref('apps/');
-        const snapshot = await ref.once('value');
-        const data = snapshot.val();
-        
-        // Kirim data ke frontend
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Endpoint Login
+app.post('/api/login', (req, res) => {
+  const { password } = req.body;
+  if (password === "Septina2209@") {
+    res.json({ success: true, token: "SESSION_ACTIVE_OK" });
+  } else {
+    res.status(401).json({ success: false, message: "Password Salah" });
+  }
 });
 
-// Melayani file statis index.html
-app.use(express.static(path.join(__dirname, '../')));
+// Endpoint Ambil Proyek
+app.get('/api/projects', async (req, res) => {
+  const snapshot = await db.ref('lockbase/projects').once('value');
+  res.json(snapshot.val() || {});
+});
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../index.html'));
+// Endpoint Tambah Proyek
+app.post('/api/projects', async (req, res) => {
+  const newProj = req.body;
+  const projectID = Math.random().toString(36).substring(2, 10).toUpperCase();
+  await db.ref('lockbase/projects/' + projectID).set({
+    ...newProj,
+    id: projectID,
+    endpoint: `https://lockbase.vercel.app/api/${projectID}`
+  });
+  res.json({ success: true, id: projectID });
 });
 
 module.exports = app;
