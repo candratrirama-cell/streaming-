@@ -1,7 +1,8 @@
 {
-  "name": "rapay-backend",
+  "name": "rapay-full-backend",
   "version": "1.0.0",
   "dependencies": {
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "firebase-admin": "^11.10.1"
   }
 }
