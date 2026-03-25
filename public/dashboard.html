@@ -1,0 +1,25 @@
+// Contoh ambil data user saat login
+async function loadDashboard() {
+    const uid = localStorage.getItem('rapay_uid');
+    const res = await fetch(`/api/get-user?uid=${uid}`);
+    const user = await res.json();
+    
+    document.getElementById('balance').innerText = user.balance;
+    document.getElementById('apikey').innerText = user.apiKey;
+}
+
+// Contoh Tarik Dana
+async function tarik() {
+    const res = await fetch('/api/withdraw', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            uid: localStorage.getItem('rapay_uid'),
+            amount: document.getElementById('nom').value,
+            dana: document.getElementById('dana').value
+        })
+    });
+    const result = await res.json();
+    alert(result.msg);
+    loadDashboard(); // Refresh saldo
+}
