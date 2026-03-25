@@ -2,48 +2,71 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>LockBase Dashboard</title>
+    <title>Rapay - Masuk</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: #00f2ff; font-family: 'monospace'; }
+        .input-glow:focus { box-shadow: 0 0 10px #00f2ff; outline: none; }
+        .card-cyber { border: 1px solid #00f2ff; background: #0a0a0a; }
+    </style>
 </head>
-<body class="bg-[#0d1117] text-white">
-
-    <div id="loginArea" class="flex h-screen items-center justify-center">
-        <div class="bg-[#161b22] p-8 rounded-xl border border-gray-800 w-80">
-            <input id="pass" type="password" class="w-full p-2 bg-gray-900 mb-4 rounded" placeholder="Password">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 p-2 rounded">Login</button>
+<body class="flex items-center justify-center h-screen p-4">
+    <div class="card-cyber p-8 rounded-lg w-full max-w-sm">
+        <h1 class="text-3xl font-bold mb-8 text-center tracking-tighter">RAPAY LOGIN</h1>
+        
+        <div id="auth-form">
+            <div id="reg-inputs" class="hidden">
+                <input type="text" id="username" placeholder="Username" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
+                <input type="text" id="phone" placeholder="Nomor Telepon" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
+            </div>
+            <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
+            <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-6 bg-black border border-gray-800 rounded input-glow">
+            
+            <button onclick="submitAuth()" id="btn-text" class="w-full bg-cyan-500 text-black py-2 rounded font-black hover:bg-white transition">LOG IN</button>
+            
+            <p class="mt-6 text-xs text-center text-gray-500">
+                <span id="toggle-text">Belum punya akun?</span> 
+                <span class="text-cyan-400 cursor-pointer underline" onclick="toggleMode()">Klik di sini</span>
+            </p>
         </div>
     </div>
 
-    <div id="dashArea" class="hidden p-8">
-        <h1 class="text-2xl font-bold mb-4">LockBase Projects</h1>
-        <div id="list" class="grid grid-cols-3 gap-4"></div>
-    </div>
-
     <script>
-        async function handleLogin() {
-            const password = document.getElementById('pass').value;
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ password })
-            });
-            const data = await res.json();
-            if(data.success) {
-                document.getElementById('loginArea').classList.add('hidden');
-                document.getElementById('dashArea').classList.remove('hidden');
-                loadData();
-            } else {
-                alert("Gagal!");
-            }
+        let mode = 'login';
+
+        function toggleMode() {
+            mode = mode === 'login' ? 'register' : 'login';
+            document.getElementById('reg-inputs').classList.toggle('hidden');
+            document.getElementById('btn-text').innerText = mode.toUpperCase();
+            document.getElementById('toggle-text').innerText = mode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?';
         }
 
-        async function loadData() {
-            const res = await fetch('/api/projects');
-            const projects = await res.json();
-            const list = document.getElementById('list');
-            list.innerHTML = "";
-            for(let key in projects) {
-                list.innerHTML += `<div class="bg-gray-800 p-4 rounded">${projects[key].name}</div>`;
+        async function submitAuth() {
+            const data = {
+                action: mode,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                username: document.getElementById('username')?.value,
+                phone: document.getElementById('phone')?.value
+            };
+
+            const res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if (result.status) {
+                if (mode === 'login') {
+                    localStorage.setItem('rapay_uid', result.uid);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert("Berhasil Daftar! Silakan Login.");
+                    toggleMode();
+                }
+            } else {
+                alert(result.msg);
             }
         }
     </script>
