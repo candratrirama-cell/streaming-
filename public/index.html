@@ -2,73 +2,166 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Rapay - Masuk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klyna AI</title>
     <style>
-        body { background: #050505; color: #00f2ff; font-family: 'monospace'; }
-        .input-glow:focus { box-shadow: 0 0 10px #00f2ff; outline: none; }
-        .card-cyber { border: 1px solid #00f2ff; background: #0a0a0a; }
+        :root {
+            --neon-green: #39ff14;
+            --dark-bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--neon-green);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: var(--neon-green);
+            color: black;
+            font-weight: bold;
+        }
+
+        .ai-msg {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid var(--neon-green);
+        }
+
+        .input-area {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--neon-green);
+            background: transparent;
+            color: white;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--neon-green);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        a {
+            color: #00e5ff;
+            text-decoration: underline;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen p-4">
-    <div class="card-cyber p-8 rounded-lg w-full max-w-sm">
-        <h1 class="text-3xl font-bold mb-8 text-center tracking-tighter">RAPAY LOGIN</h1>
-        
-        <div id="auth-form">
-            <div id="reg-inputs" class="hidden">
-                <input type="text" id="username" placeholder="Username" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
-                <input type="text" id="phone" placeholder="Nomor Telepon" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
-            </div>
-            <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-4 bg-black border border-gray-800 rounded input-glow">
-            <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-6 bg-black border border-gray-800 rounded input-glow">
-            
-            <button onclick="submitAuth()" id="btn-text" class="w-full bg-cyan-500 text-black py-2 rounded font-black hover:bg-white transition">LOG IN</button>
-            
-            <p class="mt-6 text-xs text-center text-gray-500">
-                <span id="toggle-text">Belum punya akun?</span> 
-                <span class="text-cyan-400 cursor-pointer underline" onclick="toggleMode()">Klik di sini</span>
-            </p>
-        </div>
+<body>
+
+<div class="chat-container">
+    <div id="chat-box"></div>
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Tanya Klyna..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">Kirim</button>
     </div>
+</div>
 
-    <script>
-        let mode = 'login';
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
 
-        function toggleMode() {
-            mode = mode === 'login' ? 'register' : 'login';
-            document.getElementById('reg-inputs').classList.toggle('hidden');
-            document.getElementById('btn-text').innerText = mode.toUpperCase();
-            document.getElementById('toggle-text').innerText = mode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?';
+    // Link target untuk deteksi otomatis
+    const targetTikTok = "https://vt.tiktok.com/ZSHrgLgPM/";
+    const tutorialResponse = 'tutorial lockscreen ada disini: <a href="https://whatsapp.com/channel/0029Vb76MVVHrDZenj4Tw92Y/108" target="_blank">Klik Disini</a>';
+
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        // Tampilkan pesan user
+        appendMessage(text, 'user-msg');
+        userInput.value = '';
+
+        // Cek jika input berisi link TikTok yang dimaksud
+        if (text.includes(targetTikTok)) {
+            setTimeout(() => {
+                appendMessage(tutorialResponse, 'ai-msg', true);
+            }, 500);
+            return;
         }
 
-        async function submitAuth() {
-            const data = {
-                action: mode,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                username: document.getElementById('username')?.value,
-                phone: document.getElementById('phone')?.value
-            };
+        // Loading state
+        const loadingId = appendMessage("Klyna sedang berpikir...", 'ai-msg');
 
-            const res = await fetch('/api/auth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            const result = await res.json();
-            if (result.status) {
-                if (mode === 'login') {
-                    localStorage.setItem('rapay_uid', result.uid);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert("Berhasil Daftar! Silakan Login.");
-                    toggleMode();
-                }
-            } else {
-                alert(result.msg);
-            }
+        try {
+            const response = await fetch(`https://klyna-swart.vercel.app/api/chat?key=klyna-5x9k1koc&text=${encodeURIComponent(text)}`);
+            const data = await response.json();
+            
+            // Hapus pesan loading dan ganti dengan jawaban API
+            document.getElementById(loadingId).innerHTML = data.result || data.message || "Maaf, terjadi kesalahan.";
+        } catch (error) {
+            document.getElementById(loadingId).innerText = "Gagal terhubung ke API.";
         }
-    </script>
+    }
+
+    function appendMessage(text, className, isHTML = false) {
+        const msgDiv = document.createElement('div');
+        const id = 'msg-' + Date.now();
+        msgDiv.id = id;
+        msgDiv.className = `message ${className}`;
+        
+        if (isHTML) {
+            msgDiv.innerHTML = text;
+        } else {
+            msgDiv.innerText = text;
+        }
+
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return id;
+    }
+</script>
+
 </body>
 </html>
