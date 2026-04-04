@@ -3,246 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPay - Solusi QRIS Dinamis Tercepat</title>
+    <title>CloudPay - QRIS Dinamis Tanpa APK</title>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #0066ff;
-            --secondary-color: #00d2ff;
-            --dark-color: #1a1a1a;
-            --light-color: #ffffff;
+            --primary: #0066ff;
+            --accent: #00d2ff;
+            --dark: #0a0b10;
+            --glass: rgba(255, 255, 255, 0.8);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { background: #f8faff; color: #333; overflow-x: hidden; }
 
-        body {
-            background-color: #f4f7fe;
-            color: var(--dark-color);
-            overflow-x: hidden;
-        }
-
-        /* Animasi Masuk */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Header & Nav */
-        header {
-            padding: 20px 10%;
+        /* Navbar Modern */
+        nav {
+            padding: 20px 8%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .logo-container img { height: 45px; border-radius: 8px; }
+        .logo-container span { font-weight: 800; font-size: 1.5rem; color: var(--dark); }
 
         /* Hero Section */
         .hero {
-            height: 100vh;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 180px 8% 100px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            color: white;
-            padding: 0 20px;
-            clip-path: ellipse(150% 100% at 50% 0%);
+            justify-content: space-between;
+            background: radial-gradient(circle at top right, #eef4ff, #ffffff);
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.8s ease-out;
+        .hero-content { max-width: 600px; }
+        .hero-content h1 { 
+            font-size: 3.5rem; 
+            line-height: 1.2; 
+            color: var(--dark); 
+            margin-bottom: 25px;
         }
+        .hero-content span { color: var(--primary); }
 
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            max-width: 600px;
-            animation: fadeInUp 1s ease-out;
-        }
+        .btn-group { display: flex; gap: 15px; margin-top: 40px; }
 
-        .btn-download {
-            background: var(--light-color);
-            color: var(--primary-color);
-            padding: 15px 40px;
-            border-radius: 50px;
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: fadeInUp 1.2s ease-out;
-            display: inline-flex;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .btn-download:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            background: #f0f0f0;
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(0,102,255,0.2); }
+        .btn-primary:hover { transform: translateY(-3px); background: #0052cc; }
+
+        /* Floating Animation */
+        .hero-image { position: relative; }
+        .hero-image img { 
+            width: 450px; 
+            animation: float 6s ease-in-out infinite; 
+            filter: drop-shadow(0 30px 50px rgba(0,0,0,0.1));
         }
 
-        /* Features Section */
-        .features {
-            padding: 100px 10%;
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Features Layout */
+        .section-title { text-align: center; margin-bottom: 60px; }
+        .features { padding: 100px 8%; background: white; }
+        
+        .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
 
-        .feature-card {
-            background: white;
+        .card {
             padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            transition: transform 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 24px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            transition: 0.4s;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .feature-card i {
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            margin-bottom: 15px;
-        }
-
-        /* QRIS Animation Area */
-        .qris-preview {
-            padding: 50px;
-            text-align: center;
-            background: #fff;
-        }
-
-        .phone-mockup {
-            width: 280px;
-            height: 500px;
-            border: 10px solid #333;
-            border-radius: 40px;
-            margin: 0 auto;
-            position: relative;
-            background: #eee;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-        }
-
-        .qris-code {
-            width: 80%;
-            margin-top: 100px;
-            opacity: 0.8;
-        }
-
-        footer {
-            padding: 40px;
-            text-align: center;
-            background: var(--dark-color);
-            color: white;
+        .card:hover { border-color: var(--primary); transform: scale(1.02); }
+        .icon-box { 
+            width: 60px; height: 60px; background: #eef4ff; 
+            border-radius: 15px; display: flex; align-items: center; 
+            justify-content: center; margin-bottom: 25px; color: var(--primary);
+            font-size: 1.5rem;
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.2rem; }
+        @media (max-width: 992px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 140px; }
+            .btn-group { justify-content: center; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-image img { width: 300px; margin-top: 50px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            <i class="fas fa-cloud"></i> CloudPay
+    <nav>
+        <div class="logo-container">
+            <img src="1000096080.png" alt="CloudPay Logo">
+            <span>CloudPay</span>
         </div>
-    </header>
+        <a href="Cloudpay.apk" class="btn btn-primary" style="padding: 10px 20px;">Daftar</a>
+    </nav>
 
     <section class="hero">
-        <h1>QRIS Dinamis Tanpa Batas</h1>
-        <p>Terima pembayaran instan, aman, dan otomatis langsung ke akun Anda. Solusi terbaik untuk bisnis modern.</p>
-        <a href="Cloudpay.apk" class="btn-download" download="Cloudpay.apk">
-            <i class="fab fa-android"></i> Download App Android
-        </a>
+        <div class="hero-content" data-aos="fade-right">
+            <h1>QRIS <span>Dinamis</span> Tanpa Ribet, Tanpa APK.</h1>
+            <p>Terima pembayaran otomatis dengan integrasi QRIS tercepat. Kelola bisnis Anda lebih efisien dengan sistem CloudPay yang aman.</p>
+            
+            <div class="btn-group">
+                <a href="Cloudpay.apk" class="btn btn-primary" download>
+                    <i class="fab fa-android"></i> Download Android
+                </a>
+                <a href="#" class="btn" style="border: 1px solid #ddd;">
+                    Pelajari Fitur
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-image" data-aos="zoom-in">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/online-payment-4268316-3551711.png" alt="Payment Illustration">
+        </div>
     </section>
 
     <section class="features">
-        <div class="feature-card">
-            <i class="fas fa-bolt"></i>
-            <h3>Aktivasi Instan</h3>
-            <p>Tanpa ribet, daftar langsung bisa pakai QRIS dinamis untuk segala kebutuhan.</p>
+        <div class="section-title" data-aos="fade-up">
+            <h2>Kenapa Memilih CloudPay?</h2>
         </div>
-        <div class="feature-card">
-            <i class="fas fa-shield-alt"></i>
-            <h3>Keamanan Tinggi</h3>
-            <p>Enkripsi end-to-end memastikan setiap transaksi berjalan dengan aman.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-chart-line"></i>
-            <h3>Laporan Real-time</h3>
-            <p>Pantau semua dana masuk melalui dashboard yang rapi dan transparan.</p>
+
+        <div class="feature-grid">
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div class="icon-box"><i class="fas fa-bolt"></i></div>
+                <h3>Proses Tercepat</h3>
+                <p>Generate QRIS unik per transaksi hanya dalam hitungan milidetik.</p>
+            </div>
+
+            <div class="card" data-aos="fade-up" data-aos-delay="200">
+                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                <h3>Keamanan Berlapis</h3>
+                <p>Data transaksi dan nasabah dilindungi dengan enkripsi tingkat tinggi.</p>
+            </div>
+
+            <div class="card" data-aos="fade-up" data-aos-delay="300">
+                <div class="icon-box"><i class="fas fa-code"></i></div>
+                <h3>API Dinamis</h3>
+                <p>Mudah diintegrasikan ke website atau toko online Anda tanpa perlu instal aplikasi.</p>
+            </div>
         </div>
     </section>
 
-    <section class="qris-preview">
-        <h2>Tampilan Modern & Dinamis</h2>
-        <br>
-        <div class="phone-mockup">
-            <div style="background: var(--primary-color); height: 60px; width: 100%;"></div>
-            <p style="margin-top: 20px; font-weight: bold;">Scan untuk Membayar</p>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" class="qris-code" alt="QRIS Preview">
-            <p style="padding: 20px; font-size: 0.8rem; color: #666;">QRIS Dinamis Otomatis berubah sesuai nominal transaksi.</p>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 CloudPay. All rights reserved.</p>
+    <footer style="text-align: center; padding: 50px; background: var(--dark); color: white;">
+        <p>&copy; 2026 CloudPay Solusi Digital. All Rights Reserved.</p>
     </footer>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Animasi transisi saat scroll
-        const observerOptions = {
-            threshold: 0.1
-        };
+        // Inisialisasi Animasi Scroll
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = "1";
-                    entry.target.style.transform = "translateY(0)";
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.style.opacity = "0";
-            card.style.transform = "translateY(50px)";
-            card.style.transition = "all 0.6s ease-out";
-            observer.observe(card);
+        // Logika Auto-Download saat klik tombol
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            console.log("Memulai unduhan Cloudpay.apk...");
         });
     </script>
 </body>
