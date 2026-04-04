@@ -3,194 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPay - QRIS Dinamis Tanpa APK</title>
+    <title>CloudPay - QRIS Dinamis Tanpa KTP</title>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0066ff;
-            --accent: #00d2ff;
-            --dark: #0a0b10;
-            --glass: rgba(255, 255, 255, 0.8);
+            --primary: #2563eb;
+            --accent: #00f2fe;
+            --dark: #0f172a;
+            --success: #10b981;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        body { background: #f8faff; color: #333; overflow-x: hidden; }
+        body { background: #ffffff; color: var(--dark); overflow-x: hidden; }
 
-        /* Navbar Modern */
+        /* Navbar */
         nav {
-            padding: 20px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
+            padding: 15px 8%;
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .logo-container { display: flex; align-items: center; gap: 12px; }
-        .logo-container img { height: 45px; border-radius: 8px; }
-        .logo-container span { font-weight: 800; font-size: 1.5rem; color: var(--dark); }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.4rem; }
+        .logo img { height: 40px; border-radius: 10px; }
 
         /* Hero Section */
         .hero {
-            padding: 180px 8% 100px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: radial-gradient(circle at top right, #eef4ff, #ffffff);
+            padding: 160px 8% 80px;
+            background: radial-gradient(circle at 90% 10%, #eff6ff 0%, #ffffff 100%);
+            display: flex; align-items: center; gap: 50px;
         }
 
-        .hero-content { max-width: 600px; }
-        .hero-content h1 { 
-            font-size: 3.5rem; 
-            line-height: 1.2; 
-            color: var(--dark); 
-            margin-bottom: 25px;
-        }
-        .hero-content span { color: var(--primary); }
-
-        .btn-group { display: flex; gap: 15px; margin-top: 40px; }
-
-        .btn {
-            padding: 16px 32px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .hero-text { flex: 1; }
+        .badge {
+            background: #dcfce7; color: #166534; padding: 6px 16px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 700;
+            display: inline-block; margin-bottom: 20px;
         }
 
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(0,102,255,0.2); }
-        .btn-primary:hover { transform: translateY(-3px); background: #0052cc; }
-
-        /* Floating Animation */
-        .hero-image { position: relative; }
-        .hero-image img { 
-            width: 450px; 
-            animation: float 6s ease-in-out infinite; 
-            filter: drop-shadow(0 30px 50px rgba(0,0,0,0.1));
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Features Layout */
-        .section-title { text-align: center; margin-bottom: 60px; }
-        .features { padding: 100px 8%; background: white; }
+        .hero-text h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; }
+        .hero-text h1 span { color: var(--primary); text-shadow: 2px 2px 10px rgba(37, 99, 235, 0.1); }
         
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .hero-text p { font-size: 1.15rem; color: #64748b; margin-bottom: 35px; line-height: 1.6; }
+
+        /* Highlight Box */
+        .promo-box {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px;
+        }
+        .promo-item {
+            background: white; padding: 15px; border-radius: 15px;
+            border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .promo-item i { color: var(--success); font-size: 1.2rem; }
+
+        .btn-download {
+            background: var(--dark); color: white; padding: 18px 35px;
+            border-radius: 15px; text-decoration: none; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 12px;
+            transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .btn-download:hover { transform: translateY(-5px); background: var(--primary); }
+
+        /* Comparison Section */
+        .comparison { padding: 80px 8%; background: #f8fafc; }
+        .comp-card {
+            background: white; border-radius: 30px; padding: 40px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.05);
+        }
+        .vs-circle {
+            width: 60px; height: 60px; background: var(--dark); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.2rem;
         }
 
-        .card {
-            padding: 40px;
-            border-radius: 24px;
-            background: #fdfdfd;
-            border: 1px solid #eee;
-            transition: 0.4s;
+        .comp-box { text-align: center; }
+        .comp-box.better { color: var(--primary); }
+        .comp-box h4 { font-size: 1rem; color: #94a3b8; margin-bottom: 10px; }
+        .comp-box .price { font-size: 2.5rem; font-weight: 900; }
+
+        /* Animations */
+        .floating-qr {
+            width: 400px; animation: float 5s ease-in-out infinite;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+        }
+        @keyframes float {
+            0%, 100% { transform: translatey(0) rotate(0deg); }
+            50% { transform: translatey(-20px) rotate(2deg); }
         }
 
-        .card:hover { border-color: var(--primary); transform: scale(1.02); }
-        .icon-box { 
-            width: 60px; height: 60px; background: #eef4ff; 
-            border-radius: 15px; display: flex; align-items: center; 
-            justify-content: center; margin-bottom: 25px; color: var(--primary);
-            font-size: 1.5rem;
-        }
-
-        /* Responsive */
         @media (max-width: 992px) {
-            .hero { flex-direction: column; text-align: center; padding-top: 140px; }
-            .btn-group { justify-content: center; }
-            .hero-content h1 { font-size: 2.5rem; }
-            .hero-image img { width: 300px; margin-top: 50px; }
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; }
+            .hero-text h1 { font-size: 2.8rem; }
+            .promo-box { grid-template-columns: 1fr; }
+            .comp-card { flex-direction: column; gap: 30px; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo-container">
+        <div class="logo">
             <img src="1000096080.png" alt="CloudPay Logo">
             <span>CloudPay</span>
         </div>
-        <a href="Cloudpay.apk" class="btn btn-primary" style="padding: 10px 20px;">Daftar</a>
+        <a href="Cloudpay.apk" class="btn-download" style="padding: 10px 20px; font-size: 0.9rem;">Mulai Sekarang</a>
     </nav>
 
     <section class="hero">
-        <div class="hero-content" data-aos="fade-right">
-            <h1>QRIS <span>Dinamis</span> Tanpa Ribet, Tanpa APK.</h1>
-            <p>Terima pembayaran otomatis dengan integrasi QRIS tercepat. Kelola bisnis Anda lebih efisien dengan sistem CloudPay yang aman.</p>
+        <div class="hero-text" data-aos="fade-right">
+            <div class="badge">🔥 Terobosan Baru 2026</div>
+            <h1>QRIS Dinamis <span>Tanpa KTP</span> & Tanpa Ribet.</h1>
+            <p>Satu-satunya solusi website yang butuh QRIS tanpa verifikasi KTP. Langsung aktif, langsung pakai, langsung cuan.</p>
             
-            <div class="btn-group">
-                <a href="Cloudpay.apk" class="btn btn-primary" download>
-                    <i class="fab fa-android"></i> Download Android
-                </a>
-                <a href="#" class="btn" style="border: 1px solid #ddd;">
-                    Pelajari Fitur
-                </a>
+            <div class="promo-box">
+                <div class="promo-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><b>Minimal Rp100</b> (Lainnya Rp1000)</span>
+                </div>
+                <div class="promo-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span><b>Tanpa Verifikasi KTP</b></span>
+                </div>
+                <div class="promo-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Auto-Settlement Cepat</span>
+                </div>
+                <div class="promo-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Keamanan Terjamin</span>
+                </div>
             </div>
+
+            <a href="Cloudpay.apk" class="btn-download" download>
+                <i class="fab fa-android"></i> Download & Gunakan CloudPay
+            </a>
         </div>
 
         <div class="hero-image" data-aos="zoom-in">
-            <img src="https://cdni.iconscout.com/illustration/premium/thumb/online-payment-4268316-3551711.png" alt="Payment Illustration">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/e-wallet-concept-illustration-download-in-svg-png-gif-file-formats--digital-payment-online-transaction-mobile-pack-business-illustrations-4386345.png" class="floating-qr" alt="QRIS CloudPay">
         </div>
     </section>
 
-    <section class="features">
-        <div class="section-title" data-aos="fade-up">
-            <h2>Kenapa Memilih CloudPay?</h2>
+    <section class="comparison" data-aos="fade-up">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2>Lihat Perbandingannya</h2>
+            <p>Mengapa CloudPay lebih unggul untuk bisnis kecil Anda.</p>
         </div>
 
-        <div class="feature-grid">
-            <div class="card" data-aos="fade-up" data-aos-delay="100">
-                <div class="icon-box"><i class="fas fa-bolt"></i></div>
-                <h3>Proses Tercepat</h3>
-                <p>Generate QRIS unik per transaksi hanya dalam hitungan milidetik.</p>
+        <div class="comp-card">
+            <div class="comp-box">
+                <h4>Aplikasi Lain</h4>
+                <div class="price" style="color: #cbd5e1;">Rp1.000</div>
+                <p>Minimal Transaksi Tinggi</p>
             </div>
+            
+            <div class="vs-circle">VS</div>
 
-            <div class="card" data-aos="fade-up" data-aos-delay="200">
-                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
-                <h3>Keamanan Berlapis</h3>
-                <p>Data transaksi dan nasabah dilindungi dengan enkripsi tingkat tinggi.</p>
-            </div>
-
-            <div class="card" data-aos="fade-up" data-aos-delay="300">
-                <div class="icon-box"><i class="fas fa-code"></i></div>
-                <h3>API Dinamis</h3>
-                <p>Mudah diintegrasikan ke website atau toko online Anda tanpa perlu instal aplikasi.</p>
+            <div class="comp-box better">
+                <h4>CloudPay</h4>
+                <div class="price">Rp100</div>
+                <p>Minimal Transaksi Terendah</p>
             </div>
         </div>
     </section>
 
-    <footer style="text-align: center; padding: 50px; background: var(--dark); color: white;">
-        <p>&copy; 2026 CloudPay Solusi Digital. All Rights Reserved.</p>
+    <footer style="padding: 60px 8%; background: var(--dark); color: white; text-align: center;">
+        <img src="1000096080.png" style="height: 50px; margin-bottom: 20px; filter: brightness(0) invert(1);">
+        <h3>Siap Memulai Bisnis Tanpa Hambatan?</h3>
+        <p style="opacity: 0.6; margin: 15px 0 30px;">CloudPay adalah kawan terbaik bagi website yang membutuhkan kecepatan.</p>
+        <div style="border-top: 1px solid #334155; padding-top: 30px; font-size: 0.9rem;">
+            &copy; 2026 CloudPay Tech Dinamis.
+        </div>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Inisialisasi Animasi Scroll
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
-
-        // Logika Auto-Download saat klik tombol
-        document.querySelector('.btn-primary').addEventListener('click', function() {
-            console.log("Memulai unduhan Cloudpay.apk...");
-        });
+        AOS.init({ duration: 1000, once: true });
     </script>
 </body>
 </html>
